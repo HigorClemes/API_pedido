@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  title: Higor José Clemes Trab.M2
+  description: API para sistema e aplicativo de varejo.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost/api'
+paths:
+  '/produtos':
+    get:
+      summary: Busca a lista de produtos (20 por página)
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+          
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          
+      
+   
+  '/produtos/{id}':
+    get:
+      summary: Busca os atributos de um determinado produto.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer  
+      responses:
+        '200':
+          description: OK 
+        '404':
+          description: Not found  
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+  '/pedidos':
+    get:
+      summary: Busca a lista de pedidos com seus identificadores, datas e status
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+      
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            
+    post:
+      summary: Inicia um novo pedido 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pedidos'  
+      responses:
+        '201':
+          description: Created
+        '422':
+          description: JSON inválido
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+          
+  '/pedidos/{id}/itens':
+    post:
+      summary: Adiciona um item ao pedido.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Access_token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pedidos'
+              
+      responses:
+        '201':
+          description: Created 
+        '422':
+          description: JSON inválido
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+          
+  '/pedidos/{id}':
+     patch:
+      summary: Modifica local de entrega
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: endereco
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+        '422':
+          description: JSON inválido  
+          
+  '/pedidos/{id}/finalizar':
+    patch:
+      summary: Finalizar um pedido
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Token inválido 
+        '401':  
+          description: Token expirado 
+        '422':
+          description: JSON inválido
+        
+      
+      
+components:
+  schemas:
+    produtos:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        descricao:
+          type: string
+        foto:
+          type: string           
+        quantidade:
+          type: integer
+        armazenamento:
+          type: string           
+        preco:
+          type: number
+    
+    pedidos:
+      type: object
+      properties:
+        id:
+          type: integer
+        id_cliente:
+          type: integer
+        data: 
+          type: string
+        endereco: 
+          type: string 
+        valor_do_frete:
+          type: number
+        status:
+          type: string
+      
+    item:
+      type: object
+      properties:
+        id:
+          type: integer
+        id_pedido:
+          type: integer
+        id_produto:
+          type: integer
+        quantidade:
+          type: integer
+        valor:
+          type: number
